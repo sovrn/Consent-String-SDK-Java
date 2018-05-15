@@ -1,0 +1,30 @@
+---
+pipelines:
+  Consent-String-SDK-Java-master.pipeline:
+    group: appeng
+    label_template: 1.${COUNT}
+    locking: false
+    materials:
+      default_repo:
+        git: "git@github.com:sovrn/Consent-String-SDK-Java.git"
+    stages:
+      - build.artifact:
+          clean_workspace: yes
+          fetch_materials: yes
+          jobs:
+            publish.artifact:
+              artifacts:
+                - build:
+                    source: target
+                    destination: build
+              resources:
+                - nimbus2000
+              tasks:
+                - script: |
+                      set -x on
+                      mvn versions:set -DnewVersion=${GO_PIPELINE_LABEL}
+                      mvn clean deploy
+                      /usr/bin/git rev-parse --short HEAD > ./target/git_rev
+                      /usr/bin/git tag -a v${GO_PIPELINE_LABEL} -m "SCM AUTOMATED BUILD"
+                      /usr/bin/git push origin --tags
+          keep_artifacts: yes

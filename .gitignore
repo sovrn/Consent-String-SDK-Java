@@ -5,3 +5,4 @@ build/*
 *.swp
 gradle-app.setting
 !gradle-wrapper.jar
+target/*
